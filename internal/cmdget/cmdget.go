@@ -17,6 +17,7 @@ package cmdget
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"strings"
 
@@ -69,6 +70,9 @@ type Runner struct {
 
 func (r *Runner) preRunE(_ *cobra.Command, args []string) error {
 	const op errors.Op = "cmdget.preRunE"
+	fmt.Println("BEFORE ARGS")
+	fmt.Println(args)
+	fmt.Println("AFTER ARGS")
 	if len(args) == 1 {
 		args = append(args, pkg.CurDir)
 	} else {
@@ -76,6 +80,7 @@ func (r *Runner) preRunE(_ *cobra.Command, args []string) error {
 		if err == nil || os.IsExist(err) {
 			resolvedPath, err := argutil.ResolveSymlink(r.ctx, args[1])
 			if err != nil {
+				fmt.Println("ERROR 1")
 				return errors.E(op, err)
 			}
 			args[1] = resolvedPath
@@ -83,10 +88,15 @@ func (r *Runner) preRunE(_ *cobra.Command, args []string) error {
 	}
 	t, err := parse.GitParseArgs(r.ctx, args)
 	if err != nil {
+		fmt.Println("ERROR 2")
 		return errors.E(op, err)
 	}
 
 	r.Get.Git = &t.Git
+	fmt.Println("BEFORE DESTINATION")
+	fmt.Println(t.Destination)
+	fmt.Println("AFTER DESTINATION")
+
 	p, err := pkg.New(t.Destination)
 	if err != nil {
 		return errors.E(op, types.UniquePath(t.Destination), err)

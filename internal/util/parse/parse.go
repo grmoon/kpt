@@ -16,6 +16,7 @@ package parse
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 	"path"
@@ -102,10 +103,12 @@ func targetFromPkgURL(ctx context.Context, pkgURL, dest string) (Target, error) 
 	if version == "" {
 		gur, err := gitutil.NewGitUpstreamRepo(ctx, repo)
 		if err != nil {
+			fmt.Println("THIS IS THE ERROR! 1")
 			return g, err
 		}
 		defaultRef, err := gur.GetDefaultBranch(ctx)
 		if err != nil {
+			fmt.Println("THIS IS THE ERROR! 2")
 			return g, err
 		}
 		version = defaultRef
@@ -115,6 +118,7 @@ func targetFromPkgURL(ctx context.Context, pkgURL, dest string) (Target, error) 
 	}
 	destination, err := getDest(dest, repo, dir)
 	if err != nil {
+		fmt.Println("THIS IS THE ERROR! 3")
 		return g, err
 	}
 	g.Ref = version
@@ -265,10 +269,18 @@ func getDest(v, repo, subdir string) (string, error) {
 	// default the location to a new subdirectory matching the pkg URI base
 	repo = strings.TrimSuffix(repo, "/")
 	repo = strings.TrimSuffix(repo, ".git")
+	fmt.Println("Repo: " + repo)
+	fmt.Println("SubDir: " + subdir)
+	fmt.Println("v before: " + v)
+
 	v = filepath.Join(v, path.Base(path.Join(path.Clean(repo), path.Clean(subdir))))
+	fmt.Println("v after: " + v)
 
 	// make sure the destination directory does not yet exist yet
-	if _, err := os.Stat(v); !os.IsNotExist(err) {
+	if info, err := os.Stat(v); !os.IsNotExist(err) {
+		x, _ := json.Marshal(info)
+		fmt.Println("Info: " + string(x))
+		fmt.Println(err)
 		return "", errors.Errorf("destination directory %q already exists", v)
 	}
 	return v, nil

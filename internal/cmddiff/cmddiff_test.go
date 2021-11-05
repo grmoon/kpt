@@ -15,6 +15,7 @@
 package cmddiff_test
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -62,6 +63,9 @@ func TestCmdExecute(t *testing.T) {
 	dest := filepath.Join(w.WorkspaceDirectory, g.RepoName)
 
 	getRunner := cmdget.NewRunner(fake.CtxWithDefaultPrinter(), "")
+	fmt.Println("BEFORE")
+	fmt.Println("file://" + g.RepoDirectory + ".git/")
+	fmt.Println("AFTER")
 	getRunner.Command.SetArgs([]string{"file://" + g.RepoDirectory + ".git/", "./"})
 	err := getRunner.Command.Execute()
 	assert.NoError(t, err)
