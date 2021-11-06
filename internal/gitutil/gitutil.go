@@ -51,7 +51,7 @@ func NewLocalGitRunner(pkg string) (*GitLocalRunner, error) {
 	return &GitLocalRunner{
 		gitPath: p,
 		Dir:     pkg,
-		Debug:   false,
+		Debug:   true,
 	}, nil
 }
 
