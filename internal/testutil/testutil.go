@@ -854,6 +854,7 @@ func Chdir(t *testing.T, path string) func() {
 // up the directory afterwards.
 func ConfigureTestKptCache(m *testing.M) int {
 	cacheDir, err := ioutil.TempDir("", "kpt-test-cache-repos-")
+	fmt.Println("CREATING TEMP DIR 1: " + cacheDir)
 	if err != nil {
 		panic(fmt.Errorf("error creating temp dir for cache: %w", err))
 	}
