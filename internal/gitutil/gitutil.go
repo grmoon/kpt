@@ -349,6 +349,7 @@ func (gur *GitUpstreamRepo) cacheRepo(ctx context.Context, uri string, requiredR
 	uriSha := gur.getRepoDir(uri)
 	repoCacheDir := filepath.Join(kptCacheDir, uriSha)
 	if _, err := os.Stat(repoCacheDir); os.IsNotExist(err) {
+		fmt.Println("INITIALIZING REPO CACHE DIR: " + repoCacheDir)
 		if _, err := gitRunner.Run(ctx, "init", uriSha); err != nil {
 			AmendGitExecError(err, func(e *GitExecError) {
 				e.Repo = uri
