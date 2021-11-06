@@ -237,6 +237,7 @@ func (gur *GitUpstreamRepo) GetDefaultBranch(ctx context.Context) (string, error
 	}
 
 	gitRunner, err := NewLocalGitRunner(cacheRepo)
+	gitRunner.Debug = true
 	if err != nil {
 		return "", errors.E(op, errors.Repo(gur.URI), err)
 	}
@@ -249,6 +250,10 @@ func (gur *GitUpstreamRepo) GetDefaultBranch(ctx context.Context) (string, error
 		return "", errors.E(op, errors.Repo(gur.URI), err)
 	}
 	if rr.Stdout == "" {
+		fmt.Println("BEFORE STDERR")
+		fmt.Println(rr.Stderr)
+		fmt.Println("AFTER STDERR")
+
 		return "", errors.E(op, errors.Repo(gur.URI),
 			fmt.Errorf("unable to detect default branch in repo"))
 	}

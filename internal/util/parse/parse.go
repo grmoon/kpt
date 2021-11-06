@@ -18,6 +18,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/url"
 	"os"
 	"path"
 	"path/filepath"
@@ -38,6 +39,8 @@ func GitParseArgs(ctx context.Context, args []string) (Target, error) {
 	if args[0] == "-" {
 		return g, nil
 	}
+
+	fmt.Println("ARGS[0]: " + args[0])
 
 	// Simple parsing if contains .git
 	if strings.Contains(args[0], ".git") {
@@ -107,6 +110,7 @@ func targetFromPkgURL(ctx context.Context, pkgURL, dest string) (Target, error) 
 			return g, err
 		}
 		defaultRef, err := gur.GetDefaultBranch(ctx)
+		fmt.Println("GUR: " + gur.URI)
 		if err != nil {
 			fmt.Println("THIS IS THE ERROR! 2")
 			return g, err
@@ -273,7 +277,20 @@ func getDest(v, repo, subdir string) (string, error) {
 	fmt.Println("SubDir: " + subdir)
 	fmt.Println("v before: " + v)
 
-	v = filepath.Join(v, path.Base(path.Join(path.Clean(repo), path.Clean(subdir))))
+	repoUrl, err := url.ParseRequestURI("")
+
+	if err != nil {
+		return "", errors.Errorf("cannot parse repo url %q", repo)
+	}
+
+	fmt.Println("SCHEME: " + repoUrl.Scheme)
+
+	if repoUrl.Scheme == "file" {
+		v = filepath.Join(v, filepath.Base(filepath.Join(filepath.Clean(repo), filepath.Clean(subdir))))
+	} else {
+		v = filepath.Join(v, path.Base(path.Join(path.Clean(repo), path.Clean(subdir))))
+	}
+
 	fmt.Println("v after: " + v)
 
 	// make sure the destination directory does not yet exist yet
