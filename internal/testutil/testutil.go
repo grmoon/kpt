@@ -362,7 +362,7 @@ func (g *TestGitRepo) createEmptyGitRepo(defaultBranch string) error {
 	if err != nil {
 		return err
 	}
-	g.RepoDirectory = dir
+	g.RepoDirectory = "/" + dir
 	g.RepoName = filepath.Base(g.RepoDirectory)
 
 	cmd := exec.Command("git", "init",

@@ -17,6 +17,7 @@ package parse
 import (
 	"context"
 	"fmt"
+	"net/url"
 	"os"
 	"path"
 	"path/filepath"
@@ -265,7 +266,18 @@ func getDest(v, repo, subdir string) (string, error) {
 	// default the location to a new subdirectory matching the pkg URI base
 	repo = strings.TrimSuffix(repo, "/")
 	repo = strings.TrimSuffix(repo, ".git")
-	v = filepath.Join(v, path.Base(path.Join(path.Clean(repo), path.Clean(subdir))))
+
+	repoUrl, err := url.ParseRequestURI(repo)
+
+	if err != nil {
+		return "", errors.Errorf("Cannot parse repo url %q.", repo)
+	}
+
+	if repoUrl.Scheme == "file" {
+		v = filepath.Join(v, filepath.Base(filepath.Join(filepath.Clean(repo), filepath.Clean(subdir))))
+	} else {
+		v = filepath.Join(v, path.Base(path.Join(path.Clean(repo), path.Clean(subdir))))
+	}
 
 	// make sure the destination directory does not yet exist yet
 	if _, err := os.Stat(v); !os.IsNotExist(err) {
